@@ -1,51 +1,50 @@
 import React from 'react';
 import './App.css';
+import { connect } from "react-redux";
+import MyComponent from './MyComponent';
 
 class App extends React.Component {
-  
-  constructor(props){
-    super(props);
-    this.state ={
-      forOne: false,
-      forTwo: false,
-      forThree: false
-    }
-    this.display = this.display.bind(this);
-  }
 
-  display(values){
-    if(values === 'forOne'){
-      let temp = !this.state.forOne
-      this.setState({
-        forOne: temp
-      })
-    } else if(values === 'forTwo'){
-      this.setState({
-          forTwo: 'Y'
-      })
-    } else{
-      this.setState({
-        forThree: 'Y'
-      })
-    }
-  }
-  
   render(){
     return (
       <div className="App">
+        {/* onClick is defined only for one */}
           <ul>
-            <li onClick={this.display.bind(null,'forOne')}>1</li>
-            {this.state.forOne === true ? <ul>
-              <li>a</li>
-              <li>b</li>
-            </ul> : ''}
-            <li onClick={this.display.bind(null,'forTwo')}>2</li>
-            <li onClick={this.display.bind(null,'forThree')}>3</li>
+            <li onClick={this.props.display}>RENDER CHILDREN</li>
+            <ul>
+              {this.props.dataState === true ? this.props.data.map((item) => {
+                return (
+                  <li key={item}>{item}</li>
+                )
+              }): ''}
+            </ul>
+            {/* to render and hide a component */}
+            <li onClick={this.props.displayComponent}>{this.props.label}</li>
         </ul>
+        
+        {this.props.displayComponentState === true ? <MyComponent /> : ''}
       </div>
     );
   }
   
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    data: state.data,
+    dataState: state.dataState,
+    displayComponentState: state.displayComponentState,
+    label: state.label
+  };
+};
+
+const mapDispachToProps = dispatch => {
+  return {
+    display: () => dispatch({ type: "DATA" }),
+    displayComponent: () => dispatch({ type : "COMPONENT" })
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispachToProps
+)(App);
